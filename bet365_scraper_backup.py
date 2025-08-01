@@ -1,104 +1,102 @@
-import os
-import cloudscraper
-from urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
-from dotenv import load_dotenv
+import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+import time
+import json
+from datetime import datetime, timezone
 
 
-load_dotenv()
+def is_valid_odds(text):
+    # Quick check: do at least 3 items at the end look like odds?
+    odds_lines = [line.strip() for line in text.split("\n") if "/" in line]
+    return len(odds_lines) >= 3
 
-class InPlays:
-    def __init__(self):
-        
-        self.api_url = os.getenv('INPLAYDIARYAPI')
-        if not self.api_url:
-            raise ValueError("INPLAYDIARYAPI URL must be set in the .env file")
+def scrape_bet365():
+    print("Launching browser...")
+    options = uc.ChromeOptions()
+    options.headless = False
+    driver = uc.Chrome(options=options)
+    driver.set_window_size(1400, 900)
 
-        self.headers = {
-            'Accept': os.getenv('ACCEPT'),
-            'Accept-Encoding': os.getenv('ACCEPT_ENCODING'),
-            'Accept-Language': os.getenv('ACCEPT_LANGUAGE'),
-            'Cache-Control': os.getenv('CACHE_CONTROL'),
-            'Connection': os.getenv('CONNECTION'),
-            'Cookie': os.getenv('COOKIE'),
-            'Host': os.getenv('HOST'),
-            'Origin': os.getenv('ORIGIN'),
-            'Pragma': os.getenv('PRAGMA'),
-            'Referer': os.getenv('REFERER'),
-            'Sec-Ch-Ua': os.getenv('SEC_CH_UA'),
-            'Sec-Ch-Ua-Mobile': os.getenv('SEC_CH_UA_MOBILE'),
-            'Sec-Ch-Ua-Platform': os.getenv('SEC_CH_UA_PLATFORM'),
-            'Sec-Fetch-Dest': os.getenv('SEC_FETCH_DEST'),
-            'Sec-Fetch-Mode': os.getenv('SEC_FETCH_MODE'),
-            'Sec-Fetch-Site': os.getenv('SEC_FETCH_SITE'),
-            'Sec-Fetch-User': os.getenv('SEC_FETCH_USER'),
-            'Upgrade-Insecure-Requests': os.getenv('UPGRADE_INSECURE_REQUESTS'),
-            'User-Agent': os.getenv('USER_AGENT'),
-            'Sec-WebSocket-Extensions': os.getenv('HEADERS_SEC_WEBSOCKET_EXTENSIONS'),
-            'Sec-WebSocket-Protocol': os.getenv('HEADERS_SEC_WEBSOCKET_PROTOCOL'),
-            'Sec-WebSocket-Version': os.getenv('HEADERS_SEC_WEBSOCKET_VERSION'),
-        }
-        
-        self.session = cloudscraper.create_scraper()
-        retries = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
-        self.session.mount('https://', HTTPAdapter(max_retries=retries))
+    try:
+        print("Navigating to Bet365 football...")
+        driver.get("https://www.bet365.com/#/IP/")
 
-    def on(self):
-        print("Initiating request to bet365 API...")
+        print("Waiting for fixture list to load...")
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_all_elements_located((By.XPATH, "//div[contains(@class, 'ovm-Fixture')]"))
+        )
+
+        # Force close cookie & popup overlays
+        driver.execute_script("""
+            let cookieBtn = [...document.querySelectorAll('button')].find(b => b.textContent.includes('Accept All'));
+            if (cookieBtn) cookieBtn.click();
+            let intro = document.querySelector('[class*="iip-IntroductoryPopup"] [aria-label="Close"]');
+            if (intro) intro.click();
+        """)
+
+        print("Extracting fixture rows...")
+        rows = driver.find_elements(By.XPATH, "//div[contains(@class, 'ovm-Fixture')]")
+        results = []
+
+        for idx, row in enumerate(rows):
+            try:
+                driver.execute_script("arguments[0].scrollIntoView(true);", row)
+                time.sleep(0.2)
+
+                raw_text = row.text.strip()
+                if not raw_text or not is_valid_odds(raw_text):
+                    continue
+
+                lines = raw_text.split("\n")
+                event_lines = [l for l in lines if "/" not in l]
+                odds_lines = [l for l in lines if "/" in l]
+
+# Make sure we actually have 3 odds
+                if len(odds_lines) < 3:
+                    print(f"⚠️ Row {idx} missing full odds: {odds_lines}")
+                    continue
+
+                lines = raw_text.split("\n")
+                event_lines = [l for l in lines if "/" not in l]  # everything that's not an odds line
+                odds_lines = [l for l in lines if "/" in l]
+
+                if len(event_lines) < 2:
+                    print(f"⚠️ Row {idx} missing event lines: {event_lines}")
+                    continue
+
+                event = f"{event_lines[0]} vs {event_lines[1]}"
+                from datetime import datetime, timezone  # <- also update your import at the top
+
+                timestamp = datetime.now(timezone.utc).isoformat()
+                results.append({
+                    "bookie": "bet365",
+                    "event": event,
+                    "odds": {
+                        "home": odds_lines[0],
+                        "draw": odds_lines[1],
+                        "away": odds_lines[2]
+                    },
+                    "timestamp": timestamp
+                })
+
+            except Exception as e:
+                print(f"⚠️ Row {idx} error: {e}")
+        unique = {(r['event'], json.dumps(r['odds'])): r for r in results}
+        results = list(unique.values())
+        with open("data/bet365_odds.json", "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2)
+        print(json.dumps(results, indent=2))
+
+    except Exception as e:
+        print("❌ Error during scraping:", e)
+        driver.save_screenshot("error_screenshot.png")
+    finally:
         try:
-            
-            response = self.session.get(self.api_url or "", headers=self.headers, timeout=60)
-            response.raise_for_status()   
-            print("Received response from bet365 API.")
-
-            
-            data = response.text.split('EV')
-            set_array = []
-            for item in data:
-                if 'Futebol' in item and 'Ao-Vivo' in item:
-                    format_data = {
-                        'CL': self.extract_data(item, 'CL', 'CI'),
-                        'CI': self.extract_data(item, 'CI', 'NA'),
-                        'NA': self.extract_data(item, 'NA', 'VI'),
-                        'SM': self.extract_data(item, 'SM', 'CN'),
-                        'CB': self.extract_data(item, 'CB', 'C1'),
-                        'C1': self.extract_data(item, 'C1', 'C2'),
-                        'C2': self.extract_data(item, 'C2', 'C3'),
-                        'C3': self.extract_data(item, 'C3', 'T1'),
-                        'T1': self.extract_data(item, 'T1', 'T2'),
-                        'T2': self.extract_data(item, 'T2', 'T3'),
-                        'T3': self.extract_data(item, 'T3', 'CR')
-                    }
-                    set_array.append(format_data)
-            print("Data processed successfully.")
-            return set_array
-        except Exception as http_err:
-            print(f'HTTP error occurred: {http_err}')
-            return None
-        except requests.exceptions.ConnectionError as conn_err:
-            print(f'Connection error occurred: {conn_err}')
-            return None
-        except requests.exceptions.Timeout as timeout_err:
-            print(f'Timeout error occurred: {timeout_err}')
-            return None
-        except requests.exceptions.RequestException as req_err:
-            print(f'Error occurred: {req_err}')
-            return None
-
-    @staticmethod
-    def extract_data(item, start, end):
-        try:
-            
-            start_idx = item.index(start) + len(start) + 1
-            end_idx = item.index(end) - 1
-            return item[start_idx:end_idx]
-        except ValueError:
-            print(f"Failed to extract data between {start} and {end}")
-            return None
-
+            driver.quit()
+        except Exception:
+            pass
 if __name__ == "__main__":
-    
-    in_plays = InPlays()
-    print("Starting inPlays process...")
-    result = in_plays.on()
-    print("Result:", result)
+    scrape_bet365()

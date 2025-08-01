@@ -1,0 +1,182 @@
+[
+  {
+    "bookie": "bet365",
+    "event": "Club Comunicaciones Reserves vs Argentino Quilmes Reserves",
+    "odds": {
+      "home": "3/10",
+      "draw": "10/3",
+      "away": "17/2"
+    },
+    "timestamp": "2025-07-30T14:46:07.326387+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Defensores de Belgrano Reserves vs Chacarita Juniors Reserves",
+    "odds": {
+      "home": "8/15",
+      "draw": "5/2",
+      "away": "11/2"
+    },
+    "timestamp": "2025-07-30T14:46:13.762478+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Sao Cristovao U20 vs Artsul U20",
+    "odds": {
+      "home": "5/2",
+      "draw": "4/5",
+      "away": "10/3"
+    },
+    "timestamp": "2025-07-30T14:46:20.897613+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Ilves Women vs KuPS Women",
+    "odds": {
+      "home": "33/1",
+      "draw": "16/1",
+      "away": "1/28"
+    },
+    "timestamp": "2025-07-30T14:46:27.762320+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Cheng Fung vs Benfica Macau",
+    "odds": {
+      "home": "14/1",
+      "draw": "11/2",
+      "away": "1/7"
+    },
+    "timestamp": "2025-07-30T14:46:34.894605+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Black Bulls vs Clube Ferrovi\u00e1rio de Nacala",
+    "odds": {
+      "home": "9/1",
+      "draw": "1/16",
+      "away": "22/1"
+    },
+    "timestamp": "2025-07-30T14:46:41.610580+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Club General Diaz vs Club Sportivo Limpeno",
+    "odds": {
+      "home": "150/1",
+      "draw": "14/1",
+      "away": "1/33"
+    },
+    "timestamp": "2025-07-30T14:46:48.200524+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "ACSM Codlea vs ACS Medias 2022",
+    "odds": {
+      "home": "18/1",
+      "draw": "15/2",
+      "away": "1/9"
+    },
+    "timestamp": "2025-07-30T14:46:55.450617+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "CS Metalurgistul Cugir vs Universitatea Alba Iulia",
+    "odds": {
+      "home": "21/20",
+      "draw": "13/5",
+      "away": "11/5"
+    },
+    "timestamp": "2025-07-30T14:47:01.704468+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "CS Viitorul Livezile vs Unirea Dej",
+    "odds": {
+      "home": "21/10",
+      "draw": "11/4",
+      "away": "11/10"
+    },
+    "timestamp": "2025-07-30T14:47:07.819221+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "CSM Flacara Moreni vs CS Urban Titu",
+    "odds": {
+      "home": "11/5",
+      "draw": "11/5",
+      "away": "5/4"
+    },
+    "timestamp": "2025-07-30T14:47:14.049259+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "CSM Sacele vs ACS Olimpic Zarnesti",
+    "odds": {
+      "home": "10/3",
+      "draw": "11/4",
+      "away": "8/11"
+    },
+    "timestamp": "2025-07-30T14:47:20.224816+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "New England Revolution II vs Atlanta United II",
+    "odds": {
+      "home": "13/20",
+      "draw": "11/4",
+      "away": "16/5"
+    },
+    "timestamp": "2025-07-30T14:47:26.086352+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "KFF Mitrovica Women vs Cliftonville Women",
+    "odds": {
+      "home": "8/13",
+      "draw": "12/5",
+      "away": "9/2"
+    },
+    "timestamp": "2025-07-30T14:47:27.212171+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Real Madrid (Steksy) vs PSG (Maslja)",
+    "odds": {
+      "home": "8/5",
+      "draw": "8/5",
+      "away": "11/5"
+    },
+    "timestamp": "2025-07-30T14:47:27.792079+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Lyon (Puyol) vs Tottenham (Razvan)",
+    "odds": {
+      "home": "4/9",
+      "draw": "15/4",
+      "away": "4/1"
+    },
+    "timestamp": "2025-07-30T14:47:28.387327+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Bayern (BEHEMOTH) vs PSG (HALO)",
+    "odds": {
+      "home": "1/4",
+      "draw": "4/1",
+      "away": "8/1"
+    },
+    "timestamp": "2025-07-30T14:47:29.017964+00:00"
+  },
+  {
+    "bookie": "bet365",
+    "event": "Liverpool (Kolesya) vs Man City (Endry)",
+    "odds": {
+      "home": "21/20",
+      "draw": "31/10",
+      "away": "8/5"
+    },
+    "timestamp": "2025-07-30T14:47:29.582838+00:00"
+  }
+]
